@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <title>Weather App Using Vue</title>
+  </head>
+  <body>
+    <div class="weather-question">What is the Weather Today?</div>
+    <div class="container">
+      <div class="search-box">
+        <i class="bx bxs-map"></i>
+        <input type="text" placeholder="Enter your location" />
+        <button class="bx bx-search"></button>
+      </div>
+
+      <div class="weather-box">
+        <div class="box">
+          <div class="info-weather">
+            <div class="weather">
+              <img src="icons/sun.png" />
+              <p class="temperature">0<span>°F</span></p>
+              <p class="description">Sunny Day</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weather-details">
+        <div class="humidity">
+          <i class="bx bx-water"></i>
+          <div class="text">
+            <div class="info-humidity">
+              <span>0%</span>
+            </div>
+            <p>Humidity</p>
+          </div>
+        </div>
+        <div class="wind">
+          <i class="bx bx-wind"></i>
+          <div class="text">
+            <div class="info-wind">
+              <span>0 km/h</span>
+            </div>
+            <p>Wind Speed</p>
+          </div>
+        </div>
+      </div>
+      <div class="error">
+        <div class="box">
+          <p>Error. Not Found.</p>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: lightslategray;
+      }
+      .weather-question {
+        display: flex; /* vertical alignment */
+        position: absolute;
+        top: 200px;
+        left: 20%;
+        width: 400px;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 28px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        z-index: 2;
+        transition: opacity 0.1s ease-out;
+      }
+      /* fades weather-question */
+      .fade-out {
+        opacity: 0;
+      }
+      .container {
+        position: relative;
+        width: 400px;
+        height: 100px;
+        background-color: rgba(74, 75, 108, 0.5);
+        backdrop-filter: blur(15px);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        border-radius: 16px;
+        padding: 20px;
+        overflow: hidden;
+        color: white;
+        transition: height 0.4s ease;
+      }
+      .search-box {
+        position: relative;
+        width: 100%;
+        height: 55px;
+        display: flex;
+        align-items: center;
+      }
+      /* location drop icon */
+      .search-box i {
+        position: absolute;
+        height: 50%;
+        font-size: 25px;
+        color: white;
+        padding: 0 40px 0 20px;
+      }
+      /* user input */
+      .search-box input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        outline: none;
+        border-radius: 10px;
+        font-size: 28px;
+        color: #fff;
+        font-weight: 500;
+        text-transform: capitalize;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        padding: 0 40px 0 40px;
+      }
+      /* "Enter Your Location" */
+      .search-box input::placeholder {
+        color: white;
+        text-transform: capitalize;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      }
+      /* search icon */
+      .search-box button {
+        position: absolute;
+        right: 0;
+        width: 50px;
+        height: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 25px;
+        color: white;
+        padding: 0 40px 0 5px;
+        cursor: pointer;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      }
+      .weather-box {
+        text-align: center;
+        margin: 40px 0;
+      }
+      /* hide weather icons and details */
+      .weather-box,
+      .weather-details,
+      .error {
+        visibility: hidden;
+      }
+      /* display weather icons and details when activated */
+      .weather-box.active,
+      .weather-details.active,
+      .error.active {
+        visibility: visible;
+      }
+
+      /* hides transition */
+      .weather-box .box,
+      .error .box {
+        transform: translateY(-100%);
+      }
+      /* displays transition */
+      .weather-box.active .box,
+      .error.active .box {
+        transform: translateY(0%);
+        transition: transform 0.4s ease;
+        transition-delay: 0.3s;
+      }
+      /* weather icon */
+      .weather-box img {
+        width: 50%;
+        transform: translateY(0%);
+        transition: transform 0.4s ease;
+        transition-delay: 0.1s;
+      }
+      /* temperature */
+      .weather-box .temperature {
+        position: relative;
+        font-size: 45px;
+        line-height: 1;
+        font-weight: 700;
+        padding-right: 25px;
+      }
+      /* temperature fahrenheit */
+      .weather-box .temperature span {
+        position: absolute;
+        font-size: 24px;
+        margin-left: -5px;
+      }
+      /* Sunny, rainy, etc. */
+      .weather-box .description {
+        font-size: 20px;
+        font-weight: 500;
+        padding-bottom: 40px;
+        text-transform: capitalize;
+      }
+      /* details of wind, humidity */
+      .weather-details {
+        position: absolute;
+        bottom: 40px;
+        width: 100%;
+        padding: 0 20px;
+        display: flex;
+      }
+      /* aligns wind and humidity when hidden */
+      .weather-details .humidity,
+      .weather-details .wind {
+        display: flex;
+        align-items: center;
+        width: 50%;
+        padding-left: 15px;
+        justify-content: flex-start;
+        transform: translateY(-100%);
+      }
+      /* aligns wind and humidity when visible*/
+      .weather-details.active .humidity,
+      .weather-details.active .wind {
+        display: flex;
+        align-items: center;
+        width: 50%;
+        padding-left: 5px;
+        justify-content: flex-start;
+        transform: translateY(0%);
+        transition: transform 0.4s ease;
+        transition-delay: 0.1s;
+      }
+      /* wind and humidity icons */
+      .weather-details i {
+        font-size: 50px;
+        margin-right: 10px;
+      }
+      /* wind and humidity font size */
+      .weather-details span {
+        display: inline-block;
+        font-size: 20px;
+        font-weight: 500;
+      }
+      /* wind and humidity font size */
+      .weather-details p {
+        font-size: 14px;
+      }
+      /* error message */
+      .error {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        font-size: 25px;
+        text-align: center;
+        margin-top: 200px;
+        transform: translateY(0%);
+        transition: transform 0.4s ease;
+      }
+    </style>
+
+    <script src="script.js"></script>
+  </body>
+</html>
